@@ -79,20 +79,28 @@ class OpenGraph implements Iterator
    * @return OpenGraph
    */
 	static private function _parse($HTML) {
-		preg_match('/<meta charset=[\"|\'](.*)[\"|\']/i', $HTML, $matches);
+                preg_match('/<meta charset=[\"|\'](.*)[\"|\']/i', $HTML, $matches);
 
-		if ( $matches[1] && 'utf-8' != strtolower($matches[1]) ) :
-  			$encoding = $matches[1];
-  			$HTML = mb_convert_encoding($HTML, 'UTF-8', $encoding);
-		endif;
+                if ( $matches[1] && 'utf-8' != strtolower($matches[1]) ) :
+                        $encoding = $matches[1];
+                        $HTML = mb_convert_encoding($HTML, 'UTF-8', $encoding);
+                endif;
 
-		$HTML = preg_replace('/\<meta charset\=\"(.*)\"/i',"<meta charset='utf-8'", $HTML );
+                preg_match('/<meta http\-equiv\=\"Content-Type\" content=\"text\/html\; charset\=(.*)\">/i', $HTML, $matches);
 
-		if ( strpos($HTML, '<meta http-equiv="Content-Type"') === false ) :
-  			$HTML = preg_replace( '|<head>|i', '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">', $HTML );
-		else :
-  			$HTML = preg_replace( '/<meta http\-equiv\=\"Content-Type\" content=\"text\/html\; charset\=(.*)\">/i', '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">', $HTML );
-		endif;
+                if ( $matches[1] && 'utf-8' != strtolower($matches[1]) ) :
+                        $encoding = $matches[1];
+                        $HTML = mb_convert_encoding($HTML, 'UTF-8', $encoding);
+                endif;
+
+                $HTML = preg_replace('/\<meta charset\=\"(.*)\"/i',"<meta charset='utf-8'", $HTML );
+
+                if ( strpos($HTML, '<meta http-equiv="Content-Type"') === false ) :
+                        $HTML = preg_replace( '|<head>|i', '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">', $HTML );
+                else :
+                        $HTML = preg_replace( '/<meta http\-equiv\=\"Content-Type\" content=\"text\/html\; charset\=(.*)\">/i', '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">', $HTML );
+                endif;
+
 		
 		$old_libxml_error = libxml_use_internal_errors(true);
 
