@@ -109,7 +109,8 @@ class OpenGraph implements Iterator
 		$old_libxml_error = libxml_use_internal_errors(true);
 
 		$doc = new DOMDocument();
-		$doc->loadHTML($HTML);
+		// dirty hack for dirty shit from http://stackoverflow.com/questions/8218230/php-domdocument-loadhtml-not-encoding-utf-8-correctly
+		$doc->loadHTML('<?xml encoding="utf-8" ?>' . $HTML);
 		
 		libxml_use_internal_errors($old_libxml_error);
 
