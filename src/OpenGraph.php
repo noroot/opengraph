@@ -99,7 +99,10 @@ class OpenGraph implements Iterator
 
                 $HTML = preg_replace('/\<meta charset\=\"(.*?)\"/i',"<meta charset='utf-8'", $HTML );
 
-                if ( strpos($HTML, '<meta http-equiv="Content-Type"') === false ) :
+                preg_match('/<meta http-equiv="content-type"/i', $HTML, $m);
+
+                // if ( strpos($HTML, '<meta http-equiv="content-type"') === false ) :
+                if (!isset($m[0])):
                         $HTML = preg_replace( '/<head(.*?)>/i', '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">', $HTML );
                 else :
                         $HTML = preg_replace( '/<meta http\-equiv\=\"Content-Type\" content=\"text\/html\; charset\=(.*?)\">/i', '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">', $HTML );
