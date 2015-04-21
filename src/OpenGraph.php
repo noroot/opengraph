@@ -136,21 +136,42 @@ class OpenGraph implements Iterator
      */
     static private function _parse($HTML, $headers)
     {
-        $headerCharset = self::getCharset($headers);
-
         $detected = false;
 
-        if ($headerCharset == 'koi8-r')
+        $doc = new DOMDocument();
+        @$doc->loadHTML($HTML);
+        @$xpath = new DOMXPath(($doc));
+        foreach ($doc->getElementsByTagName("meta") as $node)
         {
-            $HTML = mb_convert_encoding($HTML, 'UTF-8', 'KOI8-R');
-            $detected = true;
+            if ($node->getAttribute("http-equiv") == "Content-Type")
+            {
+                $content = $node->getAttribute("content");
+                $t = explode("=", $content);
+                $encoding = $t[1];
+                $HTML = mb_convert_encoding($HTML, 'UTF-8', $encoding);
+                $detected = true;
+                break;
+            }
         }
 
-        if ($headerCharset == 'cp1251')
+
+        if (!$detected)
         {
-            $HTML = mb_convert_encoding($HTML, 'UTF-8', 'CP1251');
-            $detected = true;
+            $headerCharset = self::getCharset($headers);
+
+            if ($headerCharset == 'koi8-r')
+            {
+                $HTML = mb_convert_encoding($HTML, 'UTF-8', 'KOI8-R');
+                $detected = true;
+            }
+
+            if ($headerCharset == 'cp1251')
+            {
+                $HTML = mb_convert_encoding($HTML, 'UTF-8', 'CP1251');
+                $detected = true;
+            }
         }
+
 
         if (!$detected)
         {
@@ -162,7 +183,7 @@ class OpenGraph implements Iterator
                 $HTML = mb_convert_encoding($HTML, 'UTF-8', $encoding);
             }
 
-            preg_match('/<meta http\-equiv\=\"Content-Type\" content=\"text\/html\; charset\=(.*?)\">/i', $HTML, $matches);
+            preg_match('/<meta http\-equiv\=(\"?)Content-Type(\"?) content=\"text\/html\; charset\=(.*?)\">/i', $HTML, $matches);
 
             if ( $matches[1] && 'utf-8' != strtolower($matches[1]) )
             {
@@ -183,6 +204,7 @@ class OpenGraph implements Iterator
             {
                 $HTML = preg_replace( '/<meta http\-equiv\=\"Content-Type\" content=\"text\/html\; charset\=(.*?)\">/i', '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">', $HTML );
             }
+
         }
         else
         {
