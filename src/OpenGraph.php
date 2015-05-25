@@ -165,7 +165,7 @@ class OpenGraph implements Iterator
                 $detected = true;
             }
 
-            if ($headerCharset == 'cp1251')
+            if ($headerCharset == 'cp1251' || $headerCharset == 'windows-1251')
             {
                 $HTML = mb_convert_encoding($HTML, 'UTF-8', 'CP1251');
                 $detected = true;
